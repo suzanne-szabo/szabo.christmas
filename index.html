@@ -145,11 +145,17 @@
             </div>
             
             <div class="mt-6 flex justify-between items-center">
-                <!-- Secondary Button: Slate Gray -->
-                <button id="detail-edit-btn" onclick="openEditModalFromDetail()" class="button-secondary px-4 py-2 rounded-lg font-semibold shadow-md hidden">
-                    Edit My List (Requires Password)
-                </button>
-                <!-- REMOVED LIST CREATOR ID DISPLAY: only show "Close" button for non-owners -->
+                <div class="flex space-x-3">
+                    <!-- Secondary Button: Slate Gray -->
+                    <button id="detail-edit-btn" onclick="openEditModalFromDetail()" class="button-secondary px-4 py-2 rounded-lg font-semibold shadow-md hidden">
+                        Edit My List (Requires Password)
+                    </button>
+                    <!-- New Email Button -->
+                    <button id="email-list-btn" onclick="openEmailPromptModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition">
+                        Email List
+                    </button>
+                </div>
+                <!-- REMOVED LIST CREATOR ID DISPLAY -->
                 <div id="detail-owner-tag" class="text-sm text-gray-500 italic hidden"></div>
                 <button onclick="closeDetailModal()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Close</button>
             </div>
@@ -229,6 +235,20 @@
             </div>
         </div>
     </div>
+    
+    <!-- Email Prompt Modal -->
+    <div id="email-prompt-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center modal-overlay p-4">
+        <div class="bg-stone-50 bg-opacity-95 rounded-xl shadow-2xl w-full max-w-sm transform transition-all duration-300 scale-95 opacity-0 p-6" id="email-prompt-modal-content">
+            <h2 class="text-xl font-bold text-red-700 mb-4">Send Wishlist via Email</h2>
+            <p class="text-gray-700 mb-4">Enter the email address to send the current list details to.</p>
+            <input type="email" id="recipient-email-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:ring-red-600 focus:border-red-600" placeholder="Recipient Email Address">
+            <div id="email-message" class="text-red-500 mb-4 hidden"></div>
+            <div class="flex justify-end space-x-4">
+                <button type="button" onclick="closeEmailPromptModal()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Cancel</button>
+                <button type="button" onclick="sendListViaMailto()" class="button-primary px-4 py-2 rounded-lg font-semibold shadow-md">Send Email</button>
+            </div>
+        </div>
+    </div>
 
 
     <!-- Toast Notification Container -->
@@ -250,7 +270,7 @@
         // Data storage
         let currentLists = [];
         let listToEdit = null;
-        let listToDetail = null;
+        let listToDetail = null; // Holds the list object currently displayed in the detail modal
 
         // Constants and Utilities
         const LISTS_COLLECTION_NAME = 'christmasLists';
@@ -307,6 +327,17 @@
             setTimeout(() => {
                 modal.classList.add('hidden');
             }, 300);
+        }
+        
+        function openEmailPromptModal() {
+            if (!listToDetail) return;
+            document.getElementById('recipient-email-input').value = '';
+            document.getElementById('email-message').classList.add('hidden');
+            openModal('email-prompt-modal');
+        }
+
+        function closeEmailPromptModal() {
+            closeModal('email-prompt-modal');
         }
 
         // --- Core App Logic ---
@@ -453,6 +484,62 @@
         function closeDetailModal() {
             listToDetail = null;
             closeModal('detail-modal');
+        }
+
+        // --- Email Logic ---
+        function formatListForEmail(list) {
+            let body = `*** ${list.listName}'s Christmas Wishlist ***\n\n`;
+            
+            const wants = list.wants ? list.wants.split('\n').filter(s => s.trim()) : [];
+            body += `1. THINGS I WANT (${wants.length} Items):\n`;
+            body += wants.map(item => `   - ${item.trim()}`).join('\n');
+            body += '\n\n';
+
+            const needs = list.needs ? list.needs.split('\n').filter(s => s.trim()) : [];
+            body += `2. THINGS I NEED (${needs.length} Items):\n`;
+            body += needs.map(item => `   - ${item.trim()}`).join('\n');
+            body += '\n\n';
+
+            const activities = list.activities ? list.activities.split('\n').filter(s => s.trim()) : [];
+            body += `3. CHRISTMAS ACTIVITIES:\n`;
+            body += activities.map(item => `   - ${item.trim()}`).join('\n');
+            body += '\n\n';
+            
+            body += `\n\nGenerated from the Szabo Family Wishlist App.`;
+
+            // Mailto uses URL encoding for the body content
+            return encodeURIComponent(body);
+        }
+
+        function sendListViaMailto() {
+            const recipientEmail = document.getElementById('recipient-email-input').value.trim();
+            const emailMessage = document.getElementById('email-message');
+            emailMessage.classList.add('hidden');
+
+            if (!recipientEmail || !listToDetail) {
+                emailMessage.textContent = 'Please enter a valid email address.';
+                emailMessage.classList.remove('hidden');
+                return;
+            }
+            
+            // Basic email validation
+            if (!recipientEmail.includes('@') || !recipientEmail.includes('.')) {
+                emailMessage.textContent = 'Invalid email address format.';
+                emailMessage.classList.remove('hidden');
+                return;
+            }
+
+            const subject = encodeURIComponent(`${listToDetail.listName}'s Christmas Wishlist`);
+            const body = formatListForEmail(listToDetail);
+            
+            const mailtoLink = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
+
+            // Open the default mail client
+            window.location.href = mailtoLink;
+
+            closeEmailPromptModal();
+            closeDetailModal();
+            createToast(`Preparing email for ${listToDetail.listName}. Your mail client should open shortly.`);
         }
 
         // --- Add/Edit Logic ---
@@ -608,6 +695,9 @@
         window.openEditModalFromDetail = openEditModalFromDetail;
         window.closePasswordModal = closePasswordModal;
         window.verifyPasswordAndOpenEdit = verifyPasswordAndOpenEdit;
+        window.openEmailPromptModal = openEmailPromptModal; // Exposed new function
+        window.closeEmailPromptModal = closeEmailPromptModal; // Exposed new function
+        window.sendListViaMailto = sendListViaMailto; // Exposed new function
     </script>
 </body>
 </html>
