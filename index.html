@@ -213,8 +213,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, addDoc, setDoc, onSnapshot, collection, query, getDoc, updateDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, addDoc, setDoc, onSnapshot, collection, query, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global Firebase variables
         let app;
@@ -287,26 +287,38 @@
         // --- Core App Logic ---
 
         function initFirebase() {
+            // This is the configuration for the Firebase Project you set up.
+            // YOUR CONFIGURATION IS NOW INSERTED HERE:
+            const firebaseConfig = {
+                apiKey: "AIzaSyBrfff-0wUtreuc9Pd27vvmsGip_fOhOEU",
+                authDomain: "szabo-family-wishlists.firebaseapp.com",
+                projectId: "szabo-family-wishlists",
+                storageBucket: "szabo-family-wishlists.firebasestorage.app",
+                messagingSenderId: "617406887208",
+                appId: "1:617406887208:web:032586d88d62561d07cc1d",
+                measurementId: "G-3E5FTNBKLL"
+            };
+
+            // CRITICAL CHECK: Ensure projectId exists
+            if (!firebaseConfig.projectId) {
+                console.error("Firebase config is invalid or missing project ID.");
+                document.getElementById('loading-indicator').textContent = "Database connection failed. Check console for error details.";
+                return; // Stop initialization
+            }
+
             try {
-                // setLogLevel('debug'); // Uncomment for debugging
-                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
                 
-                // 1. Authentication Check
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        isAuthReady = true;
-                        startDataListener(); // Start listening for data once auth is ready
-                    } else if (typeof __initial_auth_token !== 'undefined') {
-                        // Attempt custom token sign-in if token is provided
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        // Sign in anonymously if no custom token is available
-                        await signInAnonymously(auth);
-                    }
+                // Sign in anonymously for simple public access
+                signInAnonymously(auth).then(userCredential => {
+                    userId = userCredential.user.uid;
+                    isAuthReady = true;
+                    startDataListener(); // Start listening for data once auth is ready
+                }).catch(error => {
+                    console.error("Anonymous sign-in failed:", error);
+                    document.getElementById('loading-indicator').textContent = "Authentication failed. Check console for error details.";
                 });
 
             } catch (e) {
@@ -316,9 +328,8 @@
         }
 
         function getCollectionRef() {
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            const collectionPath = `/artifacts/${appId}/public/data/${LISTS_COLLECTION_NAME}`;
-            return collection(db, collectionPath);
+            // In your self-hosted version, we use the simplified root collection path:
+            return collection(db, LISTS_COLLECTION_NAME);
         }
 
         function startDataListener() {
