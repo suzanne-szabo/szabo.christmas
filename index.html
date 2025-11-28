@@ -148,8 +148,9 @@
             <div class="mt-6 flex justify-between items-center">
                 <div class="flex space-x-3">
                     <!-- Secondary Button: Slate Gray -->
-                    <button id="detail-edit-btn" onclick="openEditModalFromDetail()" class="button-secondary px-4 py-2 rounded-lg font-semibold shadow-md hidden">
-                        Edit My List (Requires Password)
+                    <!-- CHANGE: This button is now visible to ALL users, not just the creator. -->
+                    <button id="detail-edit-btn" onclick="openEditModalFromDetail()" class="button-secondary px-4 py-2 rounded-lg font-semibold shadow-md">
+                        Edit List (Requires Password)
                     </button>
                     <!-- New Email Button -->
                     <button id="email-list-btn" onclick="openEmailPromptModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition">
@@ -452,7 +453,8 @@
             
             // Hiding the ID tag entirely
             document.getElementById('detail-owner-tag').classList.add('hidden');
-            document.getElementById('detail-edit-btn').classList.toggle('hidden', !isOwner);
+            // MODIFIED: The edit button is now always visible (not based on isOwner)
+            document.getElementById('detail-edit-btn').classList.remove('hidden'); 
             
             // Consistent class for all detail sections: Light Green
             const consistentDetailClass = 'bg-green-100 text-gray-800 border-green-300';
@@ -596,7 +598,7 @@
         }
 
         function openEditModalFromDetail() {
-            // This is triggered by the "Edit My List" button in the Detail Modal
+            // This is triggered by the "Edit List" button in the Detail Modal
             document.getElementById('edit-password-input').value = '';
             document.getElementById('password-message').classList.add('hidden');
             openModal('password-modal');
@@ -624,6 +626,7 @@
                 closePasswordModal();
                 // If verified, proceed to open the edit modal with the current list data
                 openAddEditModal(listToDetail);
+                // SUCCESS! The user can now edit on this device.
             } else {
                 passwordMessage.textContent = 'Incorrect password.';
                 passwordMessage.classList.remove('hidden');
@@ -652,7 +655,8 @@
             
             const listData = {
                 listName: listName,
-                creatorId: userId,
+                // KEEPING creatorId to mark the *original* creator, but it's no longer used for edit permission.
+                creatorId: userId, 
                 wants: wants,
                 needs: needs,
                 activities: activities,
