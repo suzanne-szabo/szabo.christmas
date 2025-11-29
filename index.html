@@ -426,6 +426,12 @@
                 // Card border color based on ownership (Red for Owner, Deep Green for Others)
                 card.className = `bg-white/90 p-6 rounded-xl card-shadow cursor-pointer border-t-4 ${isOwner ? 'border-red-500' : 'border-green-700'}`;
                 card.setAttribute('onclick', `openDetailModal('${list.id}')`);
+                
+                // FIX: Calculate item counts by filtering out empty/whitespace lines
+                const wantsCount = list.wants ? list.wants.split('\n').filter(s => s.trim() !== '').length : 0;
+                const needsCount = list.needs ? list.needs.split('\n').filter(s => s.trim() !== '').length : 0;
+                // const activitiesCount = list.activities ? list.activities.split('\n').filter(s => s.trim() !== '').length : 0;
+                // Note: Activities is generally one or two lines, but we only count Wants/Needs here for simplicity as per current card design.
 
                 card.innerHTML = `
                     <div class="flex items-center justify-between mb-3">
@@ -433,8 +439,8 @@
                         ${isOwner ? '<span class="text-xs bg-red-200 text-red-700 px-2 py-1 rounded-full font-medium">YOUR LIST</span>' : ''}
                     </div>
                     <div class="text-sm text-gray-600 space-y-2">
-                        <p> Wants: ${list.wants ? list.wants.split('\n').length : 0} items</p>
-                        <p> Needs: ${list.needs ? list.needs.split('\n').length : 0} items</p>
+                        <p> Wants: ${wantsCount} items</p>
+                        <p> Needs: ${needsCount} items</p>
                     </div>
                 `;
                 container.appendChild(card);
