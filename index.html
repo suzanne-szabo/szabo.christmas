@@ -2,725 +2,228 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Szabo Family Christmas Wishlist</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            /* No background color here, let image show through */
-            min-height: 100vh; 
-            margin: 0; /* Ensure no default body margin */
-            padding: 0; /* Ensure no default body padding */
-        }
-
-        /* Background Image Container Setup */
-        #background-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            background-size: cover; /* Ensures the image covers the entire screen, prioritizing aspect ratio over seeing the whole image */
-            background-repeat: no-repeat; 
-            background-position: center; 
-            background-color: #556B8D; /* Fallback color for empty spaces if 'contain' is used */
-            
-            /* 1. Desktop Default (Wider than 1024px) */
-            background-image: url('assets/backgroundDesk.jpg'); 
-        }
-
-        /* 2. Tablet Landscape Breakpoint (768px to 1023px) */
-        @media (max-width: 1023px) { 
-            #background-container { 
-                background-image: url('assets/backgroundTablet.jpg'); 
-            }
-        }
-
-        /* 3. Mobile Portrait Breakpoint (Max 767px wide) */
-        @media (max-width: 767px) { 
-            #background-container { 
-                background-image: url('assets/backgroundMobile.jpg'); 
-            }
-        }
-        
-        /* 4. TABLET PORTRAIT OVERRIDE: Prioritize the tall mobile image when a tablet-sized screen is vertical */
-        @media (min-width: 768px) and (orientation: portrait) {
-            #background-container { 
-                background-image: url('assets/backgroundMobile.jpg'); 
-            }
-        }
-
-        /* Targeted blur for the main app content area */
-        #app {
-            backdrop-filter: blur(3px); 
-            border-radius: 1rem; 
-            overflow: hidden; 
-            background-color: rgba(255, 255, 255, 0.2); 
-            padding: 1rem; 
-        }
-
-        /* Modal and Card Styling */
-        .modal-overlay {
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px); 
-        }
-        .card-shadow {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s;
-        }
-        .card-shadow:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.2), 0 6px 8px -3px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Button Primary: Festive Red */
-        .button-primary {
-            background-color: #dc2626; /* Red-600 */
-            color: white;
-            transition: background-color 0.2s;
-        }
-        .button-primary:hover {
-            background-color: #b91c1c; /* Red-700 */
-        }
-        /* Button Secondary: Neutral Gray/Slate */
-        .button-secondary {
-            background-color: #64748b; /* Slate Gray */
-            color: white;
-            transition: background-color 0.2s;
-        }
-        .button-secondary:hover {
-            background-color: #475569;
-        }
-        
-        /* Custom styles for input focus: Use Red accent instead of Amber */
-        input:focus, textarea:focus {
-            border-color: #dc2626; /* Red-600 */
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.3); /* Red-600 with opacity */
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Szabo Family Wishlists</title>
+    <meta name="theme-color" content="#b91c1c">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Wishlists">
+    <link rel="stylesheet" href="tailwind.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body class="min-h-screen p-4 md:p-8">
+<body class="min-h-screen p-3 md:p-8">
 
-    <!-- Background Image Container -->
     <div id="background-container"></div>
-    
-    <div id="app" class="max-w-6xl mx-auto relative z-10 p-6 md:p-8"> 
-        <header class="text-center mb-8">
-            <!-- Header Text: Festive Red -->
-            <h1 class="text-5xl font-extrabold text-red-700 mb-2 drop-shadow-lg">Szabo Family Wishlists</h1>
+
+    <div id="app" class="max-w-6xl mx-auto relative z-10 p-4 md:p-8">
+        <header class="text-center mb-4">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-red-700 mb-2 drop-shadow-lg">Szabo Family Wishlists</h1>
+            <p id="countdown" class="inline-block bg-white/80 text-green-800 font-semibold px-4 py-1 rounded-full shadow"></p>
         </header>
 
-        <!-- Main Content & Controls -->
-        <!-- CHANGE: Use "justify-center md:justify-end" to center on mobile, right-align on larger screens -->
-        <div class="flex justify-center md:justify-end mb-6">
-            <!-- Primary Action Button: Festive Red -->
-            <button id="add-list-btn" onclick="openAddEditModal()" class="button-primary px-6 py-3 rounded-xl font-semibold shadow-lg flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path></svg>
-                Add My List
-            </button>
+        <!-- Controls -->
+        <div class="flex flex-col md:flex-row gap-3 md:items-center md:justify-between mb-4">
+            <label class="flex items-center gap-2 bg-white/85 rounded-xl px-3 py-2 shadow self-center md:self-auto">
+                <span class="font-semibold text-gray-700">Year</span>
+                <select id="year-select" class="bg-transparent font-semibold text-red-700 focus:outline-none"></select>
+            </label>
+            <div id="auth-area" class="flex flex-wrap justify-center md:justify-end gap-2"></div>
         </div>
 
-        <!-- Wishlist Grid -->
+        <div id="archive-banner" class="hidden mb-4 text-center bg-amber-100/95 border border-amber-300 text-amber-900 rounded-xl px-4 py-3 font-medium"></div>
+
         <div id="lists-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- List cards will be rendered here -->
-            <div id="loading-indicator" class="col-span-full text-center py-12 text-gray-700 text-lg font-semibold bg-white/70 rounded-xl shadow-md">Loading wish lists...</div>
+            <div class="col-span-full text-center py-12 text-gray-700 text-lg font-semibold bg-white/70 rounded-xl shadow-md">Loading wish lists...</div>
         </div>
     </div>
 
-
-    <!-- Detail Modal -->
-    <div id="detail-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center modal-overlay p-4">
-        <div class="bg-stone-50 bg-opacity-95 rounded-xl shadow-2xl w-full max-w-2xl transform transition-all duration-300 scale-95 opacity-0 p-6" id="detail-modal-content">
-            <div class="flex justify-between items-start mb-4">
-                <h2 id="detail-list-name" class="text-3xl font-bold text-red-700"></h2>
-                <button onclick="closeDetailModal()" class="text-gray-400 hover:text-red-500 transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    <!-- Detail modal (view a list; owners edit here too) -->
+    <div id="detail-modal" class="modal fixed inset-0 z-40 hidden flex items-end md:items-center justify-center modal-overlay md:p-4">
+        <div id="detail-modal-content" class="modal-card bg-stone-50 rounded-t-2xl md:rounded-xl shadow-2xl w-full max-w-2xl p-5 md:p-6 flex flex-col max-h-[92vh]">
+            <div class="flex justify-between items-start mb-3 gap-3">
+                <div>
+                    <h2 id="detail-name" class="text-3xl font-bold text-red-700"></h2>
+                    <p id="detail-sub" class="text-sm text-gray-500"></p>
+                </div>
+                <button data-close="detail-modal" class="text-gray-400 hover:text-red-500 p-1" aria-label="Close">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
-            
-            <div id="detail-list-body" class="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
-                <!-- List content will be dynamically inserted here -->
-            </div>
-            
-            <div class="mt-6 flex justify-between items-center">
-                <div class="flex space-x-3">
-                    <!-- Secondary Button: Slate Gray -->
-                    <!-- CHANGE: This button is now visible to ALL users, not just the creator. -->
-                    <button id="detail-edit-btn" onclick="openEditModalFromDetail()" class="button-secondary px-4 py-2 rounded-lg font-semibold shadow-md">
-                        Edit List (Requires Password)
-                    </button>
-                    <!-- New Email Button -->
-                    <button id="email-list-btn" onclick="openEmailPromptModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition">
-                        Email List
-                    </button>
+            <div id="detail-body" class="space-y-4 overflow-y-auto pr-1 flex-1"></div>
+            <div class="mt-4 flex flex-wrap gap-2 justify-between items-center">
+                <div class="flex flex-wrap gap-2">
+                    <button id="share-btn" class="button-secondary px-4 py-2 rounded-lg font-semibold shadow-md">Share</button>
+                    <button id="email-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition">Email List</button>
                 </div>
-                <!-- REMOVED LIST CREATOR ID DISPLAY -->
-                <div id="detail-owner-tag" class="text-sm text-gray-500 italic hidden"></div>
-                <button onclick="closeDetailModal()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Close</button>
+                <button data-close="detail-modal" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Close</button>
             </div>
         </div>
     </div>
 
-    <!-- Add/Edit Modal -->
-    <div id="add-edit-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center modal-overlay p-4">
-        <div class="bg-stone-50 bg-opacity-95 rounded-xl shadow-2xl w-full max-w-lg transform transition-all duration-300 scale-95 opacity-0 p-6" id="add-edit-modal-content">
-            <h2 id="add-edit-title" class="text-2xl font-bold text-red-700 mb-6">Create New Wishlist</h2>
-            <form id="wishlist-form" onsubmit="handleFormSubmit(event)">
-                <input type="hidden" id="list-doc-id">
-                
-                <div class="mb-4">
-                    <label for="list-name" class="block text-gray-700 font-semibold mb-1">Your Name</label>
-                    <input type="text" id="list-name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-red-600 focus:border-red-600">
-                </div>
-
-                <div class="mb-4">
-                    <label for="list-password" class="block text-gray-700 font-semibold mb-1">Enter a Password</label>
-                    <input type="password" id="list-password" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-red-600 focus:border-red-600">
-                    <p class="text-xs text-gray-500 mt-1">This password will allow you to edit your list later.</p>
-                </div>
-
-                <div class="space-y-4 max-h-72 overflow-y-auto pr-2">
-                    
-                    <!-- Consistent Section Style: Light Green -->
-                    <div class="bg-green-100 p-4 rounded-lg border border-green-300">
-                        <label for="wants" class="block text-gray-700 font-semibold mb-1">
-                            Things I Want (Each item on a seperate line)
-                        </label>
-                        <textarea id="wants" rows="4" class="w-full px-3 py-2 border border-green-400 rounded-lg focus:ring-red-600 focus:border-red-600"></textarea>
+    <!-- Sign in -->
+    <div id="signin-modal" class="modal fixed inset-0 z-50 hidden flex items-center justify-center modal-overlay p-4">
+        <div id="signin-modal-content" class="modal-card bg-stone-50 rounded-xl shadow-2xl w-full max-w-sm p-6">
+            <h2 class="text-2xl font-bold text-red-700 mb-1">Family sign in</h2>
+            <p class="text-gray-600 text-sm mb-4">Only the 4 family accounts can sign in. Everyone else can view the lists without signing in.</p>
+            <form id="signin-form" class="space-y-3">
+                <input type="email" id="signin-email" autocomplete="username" required placeholder="Email" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                <input type="password" id="signin-password" autocomplete="current-password" required placeholder="Password" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                <p id="signin-msg" class="text-sm hidden"></p>
+                <div class="flex justify-between items-center pt-2">
+                    <button type="button" id="forgot-btn" class="text-sm text-blue-700 underline">Forgot password?</button>
+                    <div class="flex gap-2">
+                        <button type="button" data-close="signin-modal" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                        <button type="submit" class="button-primary px-5 py-2 rounded-lg font-semibold shadow-md">Sign in</button>
                     </div>
-
-                    <!-- Consistent Section Style: Light Green -->
-                    <div class="bg-green-100 p-4 rounded-lg border border-green-300">
-                        <label for="needs" class="block text-gray-700 font-semibold mb-1">
-                            Things I Need
-                        </label>
-                        <textarea id="needs" rows="3" class="w-full px-3 py-2 border border-green-400 rounded-lg focus:ring-red-600 focus:border-red-600"></textarea>
-                    </div>
-
-                    <!-- Consistent Section Style: Light Green -->
-                    <div class="bg-green-100 p-4 rounded-lg border border-green-300">
-                        <label for="activities" class="block text-gray-700 font-semibold mb-1">
-                            Two Christmas Activities I Want to Do as a Family
-                        </label>
-                        <textarea id="activities" rows="2" class="w-full px-3 py-2 border border-green-400 rounded-lg focus:ring-red-600 focus:border-red-600"></textarea>
-                    </div>
-                </div>
-
-                <div id="form-message" class="mt-4 text-center font-medium hidden"></div>
-
-                <div class="flex justify-end space-x-4 mt-6">
-                    <button type="button" onclick="closeAddEditModal()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Cancel</button>
-                    <!-- Primary Submit Button: Festive Red -->
-                    <button type="submit" class="button-primary px-6 py-2 rounded-lg font-semibold shadow-md">
-                        <span id="submit-text">Create List</span>
-                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-
-    <!-- Password Modal for Editing -->
-    <div id="password-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center modal-overlay p-4">
-        <div class="bg-stone-50 bg-opacity-95 rounded-xl shadow-2xl w-full max-w-sm transform transition-all duration-300 scale-95 opacity-0 p-6" id="password-modal-content">
-            <h2 class="xl font-bold text-red-700 mb-4">Confirm List Password</h2>
-            <p class="text-gray-700 mb-4">Please enter the password you set for this list to confirm editing access.</p>
-            <input type="password" id="edit-password-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:ring-red-600 focus:border-red-600" placeholder="Enter password">
-            <div id="password-message" class="text-red-500 mb-4 hidden"></div>
-            <div class="flex justify-end space-x-4">
-                <button type="button" onclick="closePasswordModal()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Cancel</button>
-                <!-- Primary Button: Festive Red -->
-                <button type="button" onclick="verifyPasswordAndOpenEdit()" class="button-primary px-4 py-2 rounded-lg font-semibold shadow-md">Continue Edit</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Email Prompt Modal -->
-    <div id="email-prompt-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center modal-overlay p-4">
-        <div class="bg-stone-50 bg-opacity-95 rounded-xl shadow-2xl w-full max-w-sm transform transition-all duration-300 scale-95 opacity-0 p-6" id="email-prompt-modal-content">
-            <h2 class="xl font-bold text-red-700 mb-4">Send Wishlist via Email</h2>
-            <p class="text-gray-700 mb-4">Enter the email address to send the current list details to.</p>
-            <input type="email" id="recipient-email-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:ring-red-600 focus:border-red-600" placeholder="Recipient Email Address">
-            <div id="email-message" class="text-red-500 mb-4 hidden"></div>
-            <div class="flex justify-end space-x-4">
-                <button type="button" onclick="closeEmailPromptModal()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Cancel</button>
-                <button type="button" onclick="sendListViaMailto()" class="button-primary px-4 py-2 rounded-lg font-semibold shadow-md">Send Email</button>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed bottom-4 right-4 space-y-2 z-50"></div>
-
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, addDoc, setDoc, onSnapshot, collection, query, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global Firebase variables
-        let app;
-        let db;
-        let auth;
-        let userId = null;
-        let isAuthReady = false;
-        
-        // Data storage
-        let currentLists = [];
-        let listToEdit = null;
-        let listToDetail = null; // Holds the list object currently displayed in the detail modal
-
-        // Constants and Utilities
-        const LISTS_COLLECTION_NAME = 'christmasLists';
-        
-        // Hash function for simple password security (not cryptographically secure, but functional for this app's purpose)
-        async function hashString(str) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(str);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            return hashHex;
-        }
-
-        function createToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            // Success uses Green, error uses Red
-            const color = type === 'success' ? 'bg-green-500' : 'bg-red-500'; 
-            toast.className = `p-4 text-white rounded-lg shadow-xl ${color} opacity-0 transition-opacity duration-300 transform translate-x-10`;
-            toast.textContent = message;
-
-            document.getElementById('toast-container').appendChild(toast);
-
-            // Animate in
-            setTimeout(() => {
-                toast.classList.remove('opacity-0', 'translate-x-10');
-                toast.classList.add('opacity-100', 'translate-x-0');
-            }, 10);
-
-            // Animate out and remove
-            setTimeout(() => {
-                toast.classList.remove('opacity-100', 'translate-x-0');
-                toast.classList.add('opacity-0', 'translate-x-10');
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
-        }
-
-        // Modal Functions
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            const content = document.getElementById(`${modalId}-content`);
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                content.classList.remove('scale-95', 'opacity-0');
-                content.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            const content = document.getElementById(`${modalId}-content`);
-            content.classList.remove('scale-100', 'opacity-100');
-            content.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
-        }
-        
-        function openEmailPromptModal() {
-            if (!listToDetail) return;
-            document.getElementById('recipient-email-input').value = '';
-            document.getElementById('email-message').classList.add('hidden');
-            openModal('email-prompt-modal');
-        }
-
-        function closeEmailPromptModal() {
-            closeModal('email-prompt-modal');
-        }
-
-        // --- Core App Logic ---
-
-        function initFirebase() {
-            // This is the configuration for the Firebase Project you set up.
-            const firebaseConfig = {
-                apiKey: "AIzaSyBrfff-0wUtreuc9Pd27vvmsGip_fOhOEU",
-                authDomain: "szabo-family-wishlists.firebaseapp.com",
-                projectId: "szabo-family-wishlists",
-                storageBucket: "szabo-family-wishlists.firebasestorage.app",
-                messagingSenderId: "617406887208",
-                appId: "1:617406887208:web:032586d88d62561d07cc1d",
-                measurementId: "G-3E5FTNBKLL"
-            };
-
-            // CRITICAL CHECK: Ensure projectId exists
-            if (!firebaseConfig.projectId) {
-                console.error("Firebase config is invalid or missing project ID.");
-                document.getElementById('loading-indicator').textContent = "Database connection failed. Check console for error details.";
-                return; // Stop initialization
-            }
-
-            try {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                
-                // Sign in anonymously for simple public access
-                signInAnonymously(auth).then(userCredential => {
-                    userId = userCredential.user.uid;
-                    isAuthReady = true;
-                    startDataListener(); // Start listening for data once auth is ready
-                }).catch(error => {
-                    console.error("Anonymous sign-in failed:", error);
-                    // Update user feedback
-                    document.getElementById('loading-indicator').textContent = "Authentication failed. Check console for error details (Hint: Firebase Anonymous Auth must be enabled).";
-                });
-
-            } catch (e) {
-                console.error("Firebase initialization failed:", e);
-                createToast("Error: Firebase initialization failed. Check console for details.", 'error');
-            }
-        }
-
-        function getCollectionRef() {
-            // Using the simplified root collection path for your self-hosted version:
-            return collection(db, LISTS_COLLECTION_NAME);
-        }
-
-        function startDataListener() {
-            if (!isAuthReady || !db) return;
-
-            const q = query(getCollectionRef());
-            
-            // Listen for real-time updates
-            onSnapshot(q, (snapshot) => {
-                currentLists = [];
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    currentLists.push({ id: doc.id, ...data });
-                });
-                renderLists(currentLists);
-            }, (error) => {
-                console.error("Error listening to Firestore:", error);
-                createToast("Error fetching lists. See console.", 'error');
-            });
-            
-            document.getElementById('loading-indicator').classList.add('hidden');
-        }
-
-        function renderLists(lists) {
-            const container = document.getElementById('lists-container');
-            container.innerHTML = '';
-
-            if (lists.length === 0) {
-                container.innerHTML = '<p class="col-span-full text-center py-12 text-gray-700 text-lg font-semibold bg-white/70 rounded-xl shadow-md">No wishlists created yet. Be the first!</p>';
-                return;
-            }
-
-            lists.forEach(list => {
-                const isOwner = list.creatorId === userId;
-                const card = document.createElement('div');
-                // Card border color based on ownership (Red for Owner, Deep Green for Others)
-                card.className = `bg-white/90 p-6 rounded-xl card-shadow cursor-pointer border-t-4 ${isOwner ? 'border-red-500' : 'border-green-700'}`;
-                card.setAttribute('onclick', `openDetailModal('${list.id}')`);
-                
-                // FIX: Calculate item counts by filtering out empty/whitespace lines
-                const wantsCount = list.wants ? list.wants.split('\n').filter(s => s.trim() !== '').length : 0;
-                const needsCount = list.needs ? list.needs.split('\n').filter(s => s.trim() !== '').length : 0;
-                // const activitiesCount = list.activities ? list.activities.split('\n').filter(s => s.trim() !== '').length : 0;
-                // Note: Activities is generally one or two lines, but we only count Wants/Needs here for simplicity as per current card design.
-
-                card.innerHTML = `
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-2xl font-bold text-gray-800 truncate">${list.listName}</h3>
-                        ${isOwner ? '<span class="text-xs bg-red-200 text-red-700 px-2 py-1 rounded-full font-medium">YOUR LIST</span>' : ''}
-                    </div>
-                    <div class="text-sm text-gray-600 space-y-2">
-                        <p> Wants: ${wantsCount} items</p>
-                        <p> Needs: ${needsCount} items</p>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function openDetailModal(listId) {
-            listToDetail = currentLists.find(l => l.id === listId);
-            if (!listToDetail) return;
-
-            const detailModal = document.getElementById('detail-modal');
-            const detailBody = document.getElementById('detail-list-body');
-            const isOwner = listToDetail.creatorId === userId;
-
-            document.getElementById('detail-list-name').textContent = listToDetail.listName;
-            
-            // Hiding the ID tag entirely
-            document.getElementById('detail-owner-tag').classList.add('hidden');
-            // MODIFIED: The edit button is now always visible (not based on isOwner)
-            document.getElementById('detail-edit-btn').classList.remove('hidden'); 
-            
-            // Consistent class for all detail sections: Light Green
-            const consistentDetailClass = 'bg-green-100 text-gray-800 border-green-300';
-
-            detailBody.innerHTML = `
-                ${renderSection('Things I Want', consistentDetailClass, listToDetail.wants)}
-                ${renderSection('Things I Need', consistentDetailClass, listToDetail.needs)}
-                ${renderSection('Two Christmas Activities I Want to Do', consistentDetailClass, listToDetail.activities)}
-            `;
-
-            openModal('detail-modal');
-        }
-
-        function renderSection(title, colorClass, content) {
-            const items = content ? content.split('\n').filter(line => line.trim() !== '') : [];
-            
-            const listItems = items.length > 0
-                ? items.map(item => {
-                    // Regex to find http or https URLs at the beginning of the item or embedded
-                    const urlRegex = /(https?:\/\/[^\s]+)/g;
-                    let processedItem = item.trim();
-                    
-                    // Replace URLs with clickable links
-                    processedItem = processedItem.replace(urlRegex, (url) => {
-                        return `<a href="${url}" target="_blank" class="text-blue-600 hover:text-blue-800 underline break-all">${url}</a>`;
-                    });
-
-                    return `<li class="ml-4 list-disc">${processedItem}</li>`;
-                }).join('')
-                : '<li class="text-gray-500 italic">No items listed.</li>';
-            
-            return `
-                <div class="p-4 rounded-lg border ${colorClass}">
-                    <h3 class="font-bold text-lg mb-2 flex items-center">${title}</h3>
-                    <ul class="space-y-1">
-                        ${listItems}
-                    </ul>
+    <!-- Add / edit item -->
+    <div id="item-modal" class="modal fixed inset-0 z-50 hidden flex items-end md:items-center justify-center modal-overlay md:p-4">
+        <div id="item-modal-content" class="modal-card bg-stone-50 rounded-t-2xl md:rounded-xl shadow-2xl w-full max-w-lg p-5 md:p-6 max-h-[94vh] overflow-y-auto">
+            <h2 id="item-modal-title" class="text-2xl font-bold text-red-700 mb-4">Add an item</h2>
+            <form id="item-form" class="space-y-3">
+                <div>
+                    <label for="item-title" class="block text-gray-700 font-semibold mb-1">What is it?</label>
+                    <input type="text" id="item-title" required maxlength="200" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="e.g. Blue Lego race car set">
                 </div>
-            `;
-        }
+                <div>
+                    <span class="block text-gray-700 font-semibold mb-1">Which section?</span>
+                    <div class="grid grid-cols-3 gap-2" id="item-category">
+                        <label class="cat-pill"><input type="radio" name="category" value="want" checked><span>Want</span></label>
+                        <label class="cat-pill"><input type="radio" name="category" value="need"><span>Need</span></label>
+                        <label class="cat-pill"><input type="radio" name="category" value="activity"><span>Family activity</span></label>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="col-span-2">
+                        <label for="item-url" class="block text-gray-700 font-semibold mb-1">Link <span class="font-normal text-gray-500">(optional)</span></label>
+                        <input type="text" id="item-url" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="1000" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="https://...">
+                    </div>
+                    <div>
+                        <label for="item-price" class="block text-gray-700 font-semibold mb-1">Price</label>
+                        <input type="text" id="item-price" maxlength="20" inputmode="decimal" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="$25">
+                    </div>
+                </div>
+                <label class="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 cursor-pointer">
+                    <input type="checkbox" id="item-priority" class="w-5 h-5 accent-amber-500">
+                    <span class="font-semibold text-amber-800">⭐ Most wanted</span>
+                </label>
+                <div>
+                    <label for="item-notes" class="block text-gray-700 font-semibold mb-1">Notes <span class="font-normal text-gray-500">(size, color, any store...)</span></label>
+                    <textarea id="item-notes" rows="2" maxlength="1000" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
+                </div>
+                <div>
+                    <span class="block text-gray-700 font-semibold mb-1">Photo or screenshot <span class="font-normal text-gray-500">(optional)</span></span>
+                    <div id="photo-preview-wrap" class="hidden mb-2 relative inline-block">
+                        <img id="photo-preview" class="max-h-48 rounded-lg border border-gray-300" alt="Selected photo">
+                        <button type="button" id="photo-remove" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-7 h-7 shadow" aria-label="Remove photo">✕</button>
+                    </div>
+                    <label class="flex items-center justify-center gap-2 border-2 border-dashed border-green-400 bg-green-50 rounded-lg px-3 py-3 cursor-pointer text-green-800 font-semibold">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v-9A2.25 2.25 0 015.25 5.25h2.1l1.2-1.8h6.9l1.2 1.8h2.1A2.25 2.25 0 0121 7.5v9a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 16.5z"/><circle cx="12" cy="12" r="3.5"/></svg>
+                        <span id="photo-pick-label">Choose photo</span>
+                        <input type="file" id="item-photo" accept="image/*" class="hidden">
+                    </label>
+                    <p id="photo-status" class="text-xs text-gray-500 mt-1 hidden"></p>
+                </div>
+                <p id="item-msg" class="text-sm text-red-600 hidden"></p>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" data-close="item-modal" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="submit" id="item-save" class="button-primary px-6 py-2 rounded-lg font-semibold shadow-md">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        function closeDetailModal() {
-            listToDetail = null;
-            closeModal('detail-modal');
-        }
+    <!-- Profile: name, sizes & favorites -->
+    <div id="profile-modal" class="modal fixed inset-0 z-50 hidden flex items-end md:items-center justify-center modal-overlay md:p-4">
+        <div id="profile-modal-content" class="modal-card bg-stone-50 rounded-t-2xl md:rounded-xl shadow-2xl w-full max-w-lg p-5 md:p-6 max-h-[94vh] overflow-y-auto">
+            <h2 class="text-2xl font-bold text-red-700 mb-1">Sizes &amp; favorites</h2>
+            <p id="profile-intro" class="text-gray-600 text-sm mb-4">Everyone can see this on your list.</p>
+            <form id="profile-form" class="space-y-3">
+                <div>
+                    <label for="pf-name" class="block text-gray-700 font-semibold mb-1">Your name (as shown on your list)</label>
+                    <input type="text" id="pf-name" required maxlength="40" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <fieldset class="bg-green-100 border border-green-300 rounded-lg p-3">
+                    <legend class="font-semibold text-gray-700 px-1">Sizes</legend>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input id="pf-shirt" maxlength="40" placeholder="Shirt" class="px-3 py-2 border border-green-400 rounded-lg">
+                        <input id="pf-pants" maxlength="40" placeholder="Pants" class="px-3 py-2 border border-green-400 rounded-lg">
+                        <input id="pf-shoes" maxlength="40" placeholder="Shoes" class="px-3 py-2 border border-green-400 rounded-lg">
+                        <input id="pf-othersize" maxlength="80" placeholder="Other (ring, hat...)" class="px-3 py-2 border border-green-400 rounded-lg">
+                    </div>
+                </fieldset>
+                <fieldset class="bg-green-100 border border-green-300 rounded-lg p-3 space-y-2">
+                    <legend class="font-semibold text-gray-700 px-1">Favorites</legend>
+                    <input id="pf-colors" maxlength="120" placeholder="Favorite colors" class="w-full px-3 py-2 border border-green-400 rounded-lg">
+                    <input id="pf-things" maxlength="300" placeholder="Favorite snacks, stores, brands..." class="w-full px-3 py-2 border border-green-400 rounded-lg">
+                    <input id="pf-avoid" maxlength="300" placeholder="Please no... (allergies, dislikes)" class="w-full px-3 py-2 border border-green-400 rounded-lg">
+                </fieldset>
+                <p id="profile-msg" class="text-sm text-red-600 hidden"></p>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" data-close="profile-modal" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="button-primary px-6 py-2 rounded-lg font-semibold shadow-md">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        // --- Email Logic ---
-        function formatListForEmail(list) {
-            let body = `*** ${list.listName}'s Christmas Wishlist ***\n\n`;
-            
-            const wants = list.wants ? list.wants.split('\n').filter(s => s.trim()) : [];
-            body += `1. THINGS I WANT (${wants.length} Items):\n`;
-            body += wants.map(item => `   - ${item.trim()}`).join('\n');
-            body += '\n\n';
+    <!-- Claim an item -->
+    <div id="claim-modal" class="modal fixed inset-0 z-50 hidden flex items-center justify-center modal-overlay p-4">
+        <div id="claim-modal-content" class="modal-card bg-stone-50 rounded-xl shadow-2xl w-full max-w-sm p-6">
+            <h2 class="text-xl font-bold text-red-700 mb-2">🎁 I'm getting this</h2>
+            <p id="claim-item-name" class="text-gray-800 font-semibold mb-2"></p>
+            <p class="text-gray-600 text-sm mb-4">Everyone else will see it's taken, so no one buys it twice. <b id="claim-owner-name"></b> won't see it.</p>
+            <form id="claim-form">
+                <input type="text" id="claim-name" maxlength="40" placeholder="Your name (optional)" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4">
+                <div class="flex justify-end gap-2">
+                    <button type="button" data-close="claim-modal" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="button-primary px-5 py-2 rounded-lg font-semibold shadow-md">Mark as claimed</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-            const needs = list.needs ? list.needs.split('\n').filter(s => s.trim()) : [];
-            body += `2. THINGS I NEED (${needs.length} Items):\n`;
-            body += needs.map(item => `   - ${item.trim()}`).join('\n');
-            body += '\n\n';
+    <!-- Email -->
+    <div id="email-modal" class="modal fixed inset-0 z-50 hidden flex items-center justify-center modal-overlay p-4">
+        <div id="email-modal-content" class="modal-card bg-stone-50 rounded-xl shadow-2xl w-full max-w-sm p-6">
+            <h2 class="text-xl font-bold text-red-700 mb-4">Send Wishlist via Email</h2>
+            <p class="text-gray-700 mb-4">Enter the email address to send this list to.</p>
+            <form id="email-form">
+                <input type="email" id="email-to" class="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4" placeholder="Recipient email address">
+                <p id="email-msg" class="text-red-500 mb-4 hidden"></p>
+                <div class="flex justify-end gap-2">
+                    <button type="button" data-close="email-modal" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="button-primary px-4 py-2 rounded-lg font-semibold shadow-md">Send Email</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-            const activities = list.activities ? list.activities.split('\n').filter(s => s.trim()) : [];
-            body += `3. CHRISTMAS ACTIVITIES:\n`;
-            body += activities.map(item => `   - ${item.trim()}`).join('\n');
-            body += '\n\n';
-            
-            body += `\n\nGenerated from the Szabo Family Wishlist App.`;
+    <!-- Confirm -->
+    <div id="confirm-modal" class="modal fixed inset-0 z-[60] hidden flex items-center justify-center modal-overlay p-4">
+        <div id="confirm-modal-content" class="modal-card bg-stone-50 rounded-xl shadow-2xl w-full max-w-sm p-6">
+            <p id="confirm-text" class="text-gray-800 mb-5"></p>
+            <div class="flex justify-end gap-2">
+                <button type="button" id="confirm-no" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Cancel</button>
+                <button type="button" id="confirm-yes" class="button-primary px-4 py-2 rounded-lg font-semibold shadow-md">OK</button>
+            </div>
+        </div>
+    </div>
 
-            // Mailto uses URL encoding for the body content
-            return encodeURIComponent(body);
-        }
+    <!-- Full-size photo -->
+    <div id="lightbox" class="fixed inset-0 z-[70] hidden flex items-center justify-center bg-black/85 p-3" role="dialog" aria-label="Photo">
+        <img id="lightbox-img" class="max-w-full max-h-full rounded-lg shadow-2xl" alt="">
+        <button id="lightbox-close" class="absolute top-3 right-3 text-white bg-black/50 rounded-full w-10 h-10 text-xl" aria-label="Close">✕</button>
+    </div>
 
-        function sendListViaMailto() {
-            const recipientEmail = document.getElementById('recipient-email-input').value.trim();
-            const emailMessage = document.getElementById('email-message');
-            emailMessage.classList.add('hidden');
+    <div id="toast-container" class="pointer-events-none fixed bottom-4 right-4 left-4 md:left-auto space-y-2 z-[80] flex flex-col items-end"></div>
 
-            if (!recipientEmail || !listToDetail) {
-                emailMessage.textContent = 'Please enter a valid email address.';
-                emailMessage.classList.remove('hidden');
-                return;
-            }
-            
-            // Basic email validation
-            if (!recipientEmail.includes('@') || !recipientEmail.includes('.')) {
-                emailMessage.textContent = 'Invalid email address format.';
-                emailMessage.classList.remove('hidden');
-                return;
-            }
-
-            const subject = encodeURIComponent(`${listToDetail.listName}'s Christmas Wishlist`);
-            const body = formatListForEmail(listToDetail);
-            
-            const mailtoLink = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
-
-            // Open the default mail client
-            window.location.href = mailtoLink;
-
-            closeEmailPromptModal();
-            closeDetailModal();
-            createToast(`Preparing email for ${listToDetail.listName}. Your mail client should open shortly.`);
-        }
-
-        // --- Add/Edit Logic ---
-
-        function openAddEditModal(list = null) {
-            if (!isAuthReady || !userId) {
-                createToast("Please wait for authentication to complete.", 'error');
-                return;
-            }
-
-            listToEdit = list;
-            const form = document.getElementById('wishlist-form');
-            document.getElementById('add-edit-title').textContent = list ? 'Edit Your Wishlist' : 'Create New Wishlist';
-            document.getElementById('submit-text').textContent = list ? 'Save Changes' : 'Create List';
-            
-            // Clear form
-            form.reset();
-            document.getElementById('list-doc-id').value = list ? list.id : '';
-            document.getElementById('form-message').classList.add('hidden');
-            
-            // Pre-fill if editing
-            if (list) {
-                document.getElementById('list-name').value = list.listName || '';
-                document.getElementById('wants').value = list.wants || '';
-                document.getElementById('needs').value = list.needs || '';
-                document.getElementById('activities').value = list.activities || '';
-                document.getElementById('list-password').placeholder = 'Enter new password to change, or original to keep';
-                document.getElementById('list-password').required = false; 
-            } else {
-                 document.getElementById('list-password').placeholder = '';
-                 document.getElementById('list-password').required = true;
-            }
-
-            closeDetailModal(); // Close detail if open
-            openModal('add-edit-modal');
-        }
-        
-        function closeAddEditModal() {
-            listToEdit = null;
-            closeModal('add-edit-modal');
-        }
-
-        function openEditModalFromDetail() {
-            // This is triggered by the "Edit List" button in the Detail Modal
-            document.getElementById('edit-password-input').value = '';
-            document.getElementById('password-message').classList.add('hidden');
-            openModal('password-modal');
-        }
-
-        function closePasswordModal() {
-            closeModal('password-modal');
-        }
-
-        async function verifyPasswordAndOpenEdit() {
-            const enteredPassword = document.getElementById('edit-password-input').value;
-            const passwordMessage = document.getElementById('password-message');
-            passwordMessage.classList.add('hidden');
-
-            if (!listToDetail || !enteredPassword) {
-                passwordMessage.textContent = 'Please enter a password.';
-                passwordMessage.classList.remove('hidden');
-                return;
-            }
-
-            // Verify the entered password against the stored hash
-            const enteredHash = await hashString(enteredPassword);
-
-            if (enteredHash === listToDetail.passwordHash) {
-                closePasswordModal();
-                // If verified, proceed to open the edit modal with the current list data
-                openAddEditModal(listToDetail);
-                // SUCCESS! The user can now edit on this device.
-            } else {
-                passwordMessage.textContent = 'Incorrect password.';
-                passwordMessage.classList.remove('hidden');
-            }
-        }
-
-
-        async function handleFormSubmit(event) {
-            event.preventDefault();
-            const formMessage = document.getElementById('form-message');
-            formMessage.classList.add('hidden');
-            const docId = document.getElementById('list-doc-id').value;
-            const listName = document.getElementById('list-name').value.trim();
-            const password = document.getElementById('list-password').value.trim();
-            
-            const wants = document.getElementById('wants').value.trim();
-            const needs = document.getElementById('needs').value.trim();
-            const activities = document.getElementById('activities').value.trim();
-
-            if (!listName || (!docId && !password)) {
-                 formMessage.textContent = "Please fill in the list name and password.";
-                 formMessage.classList.remove('hidden');
-                 formMessage.classList.add('text-red-500');
-                 return;
-            }
-            
-            const listData = {
-                listName: listName,
-                // KEEPING creatorId to mark the *original* creator, but it's no longer used for edit permission.
-                creatorId: userId, 
-                wants: wants,
-                needs: needs,
-                activities: activities,
-                lastUpdated: new Date().toISOString()
-            };
-
-            try {
-                let finalPasswordHash = listToEdit ? listToEdit.passwordHash : '';
-
-                if (password) {
-                    // Only hash and set the password if the user provided one (required for new, optional for edit)
-                    finalPasswordHash = await hashString(password);
-                }
-                
-                if (!finalPasswordHash) {
-                    // This error case should ideally not happen if required is enforced on new lists
-                    throw new Error("A password must be set for new lists or re-entered/kept for existing lists.");
-                }
-
-                listData.passwordHash = finalPasswordHash;
-
-
-                if (docId) {
-                    // Editing existing document
-                    const docRef = doc(getCollectionRef(), docId);
-                    await updateDoc(docRef, listData);
-                    createToast(`Successfully updated ${listName}!`);
-                } else {
-                    // Creating new document
-                    await addDoc(getCollectionRef(), listData);
-                    createToast(`Successfully created ${listName}'s list!`);
-                }
-
-                closeAddEditModal();
-
-            } catch (e) {
-                console.error("Error saving wishlist:", e);
-                formMessage.textContent = `Error saving list: ${e.message}`;
-                formMessage.classList.remove('hidden');
-                formMessage.classList.add('text-red-500');
-            }
-        }
-
-        // Initialize the app on load
-        window.onload = initFirebase;
-        
-        // Expose functions globally for HTML event handlers
-        window.openAddEditModal = openAddEditModal;
-        window.closeAddEditModal = closeAddEditModal;
-        window.handleFormSubmit = handleFormSubmit;
-        window.openDetailModal = openDetailModal;
-        window.closeDetailModal = closeDetailModal;
-        window.openEditModalFromDetail = openEditModalFromDetail;
-        window.closePasswordModal = closePasswordModal;
-        window.verifyPasswordAndOpenEdit = verifyPasswordAndOpenEdit;
-        window.openEmailPromptModal = openEmailPromptModal; // Exposed new function
-        window.closeEmailPromptModal = closeEmailPromptModal; // Exposed new function
-        window.sendListViaMailto = sendListViaMailto; // Exposed new function
-    </script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
